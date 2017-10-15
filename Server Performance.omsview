@@ -1,0 +1,270 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "Server Performance",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/Server Performance')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "Server Performance",
+                        "Name": "Server Performance",
+                        "Author": null,
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Performance",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "CPU Utilization",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "Percentage",
+                                                "baseUnit": "ZeroToOne",
+                                                "displayUnit": "ZeroToOne"
+                                            },
+                                            "customLabel": ""
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "ColumnsTitle": {
+                                            "Name": "Computer",
+                                            "Value": "Last Value"
+                                        },
+                                        "Color": "#0072c6",
+                                        "operation": "Last Sample",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Memory Utilization",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize util = max(CounterValue) by Computer,bin(TimeGenerated,5m)",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "Percentage",
+                                                "baseUnit": "ZeroToOne",
+                                                "displayUnit": "ZeroToOne"
+                                            },
+                                            "customLabel": ""
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize max(CounterValue) by Computer,bin(TimeGenerated,5m)",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "operation": "Last Sample",
+                                        "ColumnsTitle": {
+                                            "Name": "Computer",
+                                            "Value": "Last Value"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize Memory_Utilization = max(CounterValue) by Computer,bin(TimeGenerated,5m)"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Disk Utilzation",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m)  | where InstanceName != \"_Total\"  | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util ",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "Percentage",
+                                                "baseUnit": "ZeroToOne",
+                                                "displayUnit": "ZeroToOne"
+                                            },
+                                            "customLabel": ""
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m)  | where InstanceName != \"_Total\"  | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util ",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "operation": "Last Sample",
+                                        "ColumnsTitle": {
+                                            "Name": "Disk",
+                                            "Value": "Last value"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": true,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\" | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m) | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util "
+                                    }
+                                }
+                            }
+                        ],
+                        "Filters": [],
+                        "OverviewTile": {
+                            "Id": "SingleNumberBuilderTile",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "Tile": {
+                                    "Legend": "Number of servers",
+                                    "Query": "Perf | summarize count() by Computer | count "
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search * | limit 1 | project TimeGenerated",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
