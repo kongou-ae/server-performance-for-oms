@@ -53,7 +53,7 @@
                                 "Version": 0,
                                 "Configuration": {
                                     "General": {
-                                        "title": "Performance",
+                                        "title": "Capacity",
                                         "newGroup": false,
                                         "icon": "",
                                         "useIcon": false
@@ -63,7 +63,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,10s)",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -75,15 +75,15 @@
                                         }
                                     },
                                     "List": {
-                                        "Query": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,10s)",
                                         "HideGraph": false,
                                         "enableSparklines": true,
+                                        "operation": "Last Sample",
                                         "ColumnsTitle": {
                                             "Name": "Computer",
                                             "Value": "Last Value"
                                         },
                                         "Color": "#0072c6",
-                                        "operation": "Last Sample",
                                         "thresholds": {
                                             "isEnabled": true,
                                             "values": [
@@ -108,7 +108,7 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,5m)"
+                                        "NavigationQuery": "Perf | where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName == \"_Total\" | summarize util = max(CounterValue) by Computer, bin(TimeGenerated,10s)"
                                     }
                                 }
                             },
@@ -128,7 +128,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize util = max(CounterValue) by Computer,bin(TimeGenerated,5m)",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize util = max(CounterValue) by Computer,bin(TimeGenerated,10s)",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -140,7 +140,7 @@
                                         }
                                     },
                                     "List": {
-                                        "Query": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize max(CounterValue) by Computer,bin(TimeGenerated,5m)",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize max(CounterValue) by Computer,bin(TimeGenerated,10s)",
                                         "HideGraph": false,
                                         "enableSparklines": true,
                                         "operation": "Last Sample",
@@ -173,7 +173,7 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize Memory_Utilization = max(CounterValue) by Computer,bin(TimeGenerated,5m)"
+                                        "NavigationQuery": "Perf | where ObjectName == \"Memory\" and CounterName == \"% Committed Bytes In Use\" | summarize Memory_Utilization = max(CounterValue) by Computer,bin(TimeGenerated,10s)"
                                     }
                                 }
                             },
@@ -193,7 +193,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m)  | where InstanceName != \"_Total\"  | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util ",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,10s)  | where InstanceName != \"_Total\"  | project Disk = strcat(InstanceName,\" \",Computer), TimeGenerated , util ",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -205,7 +205,7 @@
                                         }
                                     },
                                     "List": {
-                                        "Query": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m)  | where InstanceName != \"_Total\"  | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util ",
+                                        "Query": "Perf | where ${Computer} | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\"  | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,10s)  | where InstanceName != \"_Total\"  | project Disk =  strcat(InstanceName,\" \",Computer), TimeGenerated , util ",
                                         "HideGraph": false,
                                         "enableSparklines": true,
                                         "operation": "Last Sample",
@@ -238,12 +238,148 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\" | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,5m) | project Disk = strcat(Computer,\" \", InstanceName), TimeGenerated , util "
+                                        "NavigationQuery": "Perf | where ObjectName == \"LogicalDisk\" and CounterName == \"% Free Space\" | summarize util = 100 - max(CounterValue) by Computer, InstanceName, bin(TimeGenerated,10s) | project Disk =  strcat(InstanceName,\" \",Computer), TimeGenerated , util "
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Inbound traffic",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "Perf | where ${Computer} | where CounterName == \"Bytes Received/sec\"  | summarize bps = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project nic =  strcat(InstanceName,\" \",Computer), TimeGenerated , bps",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "Perf | where ${Computer} | where CounterName == \"Bytes Received/sec\" | summarize util = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project bps =  strcat(InstanceName,\" \",Computer), TimeGenerated , util ",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "operation": "Last Sample",
+                                        "ColumnsTitle": {
+                                            "Name": "NIC",
+                                            "Value": "Last value"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "Perf | where CounterName == \"Bytes Received/sec\"  | summarize util = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project bps =  strcat(InstanceName,\" \",Computer), TimeGenerated , util "
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "LineChartBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Outbound trafic",
+                                        "Subtitle": ""
+                                    },
+                                    "LineChart": {
+                                        "Query": "Perf | where ${Computer} | where CounterName == \"Bytes Sent/sec\" | summarize bps = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project nic =  strcat(InstanceName,\" \",Computer), TimeGenerated , bps",
+                                        "yAxis": {
+                                            "isLogarithmic": false,
+                                            "units": {
+                                                "baseUnitType": "",
+                                                "baseUnit": "",
+                                                "displayUnit": ""
+                                            },
+                                            "customLabel": ""
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "Perf | where ${Computer} | where CounterName == \"Bytes Sent/sec\"  | summarize bps = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project nic =  strcat(InstanceName,\" \",Computer), TimeGenerated , bps",
+                                        "HideGraph": false,
+                                        "enableSparklines": true,
+                                        "operation": "Last Sample",
+                                        "ColumnsTitle": {
+                                            "Name": "NIC",
+                                            "Value": "Last value"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "Perf  | where CounterName == \"Bytes Sent/sec\"  | summarize bps = max(CounterValue) * 8 by Computer, InstanceName, bin(TimeGenerated,10s) | project nic =  strcat(InstanceName,\" \",Computer), TimeGenerated , bps"
                                     }
                                 }
                             }
                         ],
-                        "Filters": [],
+                        "Filters": [
+                            {
+                                "FieldName": "Computer",
+                                "QueryForValues": "search * | summarize AggregatedValue = count() by Computer",
+                                "Title": "Computer"
+                            }
+                        ],
                         "OverviewTile": {
                             "Id": "SingleNumberBuilderTile",
                             "Type": "OverviewTile",
